@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Debug Login Issue</title>
+    <style>
+        body { font-family: Arial, sans-serif; padding: 20px; }
+        button { padding: 10px 20px; margin: 10px; cursor: pointer; }
+        .info { background: #f0f0f0; padding: 10px; margin: 10px 0; }
+        .success { color: green; }
+        .error { color: red; }
+    </style>
+</head>
+<body>
+    <h1>Debug Login Issue</h1>
+    
+    <div class="info">
+        <h3>Current localStorage Data:</h3>
+        <div id="localStorage-content"></div>
+    </div>
+    
+    <button onclick="clearAllData()">Clear All localStorage Data</button>
+    <button onclick="checkAuthState()">Check Auth State</button>
+    <button onclick="goToLogin()">Go to Login Page</button>
+    
+    <div id="result"></div>
+    
+    <script>
+        function displayLocalStorage() {
+            const content = document.getElementById('localStorage-content');
+            let html = '';
+            
+            if (localStorage.length === 0) {
+                html = '<p>No data in localStorage</p>';
+            } else {
+                for (let i = 0; i < localStorage.length; i++) {
+                    const key = localStorage.key(i);
+                    const value = localStorage.getItem(key);
+                    html += `<strong>${key}:</strong> ${value}<br>`;
+                }
+            }
+            content.innerHTML = html;
+        }
+        
+        function clearAllData() {
+            try {
+                localStorage.clear();
+                sessionStorage.clear();
+                document.getElementById('result').innerHTML = '<p class="success">All storage cleared successfully!</p>';
+                displayLocalStorage();
+            } catch (error) {
+                document.getElementById('result').innerHTML = '<p class="error">Error clearing storage: ' + error.message + '</p>';
+            }
+        }
+        
+        function checkAuthState() {
+            const userSession = localStorage.getItem('userSession');
+            const registeredUsers = localStorage.getItem('registeredUsers');
+            
+            let html = '<h4>Authentication State:</h4>';
+            html += `<p><strong>userSession:</strong> ${userSession ? 'EXISTS' : 'NOT FOUND'}</p>`;
+            html += `<p><strong>registeredUsers:</strong> ${registeredUsers ? 'EXISTS' : 'NOT FOUND'}</p>`;
+            
+            if (userSession) {
+                try {
+                    const session = JSON.parse(userSession);
+                    html += `<p><strong>Current User:</strong> ${session.user?.email || 'Unknown'}</p>`;
+                } catch (e) {
+                    html += '<p class="error">Invalid session data</p>';
+                }
+            }
+            
+            document.getElementById('result').innerHTML = html;
+        }
+        
+        function goToLogin() {
+            window.location.href = '/login';
+        }
+        
+        // Display localStorage on page load
+        displayLocalStorage();
+    </script>
+</body>
+</html>
